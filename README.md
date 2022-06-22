@@ -1,2 +1,2 @@
 # ReDecompress
-It decompressed '.rpak'  files!
+It decompresses '.rpak'  files!
