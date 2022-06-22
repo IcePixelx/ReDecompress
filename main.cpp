@@ -33,16 +33,6 @@ std::pair<std::string, bool> open_file_dialog()
 	return std::make_pair(file_str, true);
 }
 
-void decompress_r2()
-{
-
-}
-
-void decompress_r5()
-{
-
-}
-
 int main(int argc, char* argv[])
 {
 	std::string pak_path = std::string();
