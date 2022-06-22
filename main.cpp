@@ -124,8 +124,7 @@ int main(int argc, char* argv[])
 		out_pak.insert(out_pak.find(".rpak"), "_decompressed");
 
 		std::ofstream out_block(out_pak, std::fstream::binary);
-
-		
+	
 		if (rheader->m_nPatchIndex > 0)
 		{
 			for (int i = 1, patch_offset = 0x58; i <= rheader->m_nPatchIndex; i++, patch_offset += sizeof(RPakPatchHeader_t))
