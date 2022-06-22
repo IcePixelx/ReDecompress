@@ -122,6 +122,7 @@ namespace
 
 enum class RPakVersion : std::uint16_t
 {
+	R2TT = 6,
 	R2 = 7,
 	R5 = 8
 };
