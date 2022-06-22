@@ -1,5 +1,3 @@
-#define PAK_HEADER_SIZE   0x80
-
 namespace
 {
 	/*unk_141313180*/
@@ -122,10 +120,50 @@ namespace
 	};
 }
 
-struct RPakHeader_t
+enum class RPakVersion : std::uint16_t
+{
+	R2 = 7,
+	R5 = 8
+};
+
+struct RPakInfoHeader_t
+{
+	std::uint32_t Magic;
+	RPakVersion   Version;
+};
+
+struct RPakHeaderR2_t
 {
 	std::uint32_t m_nMagic;                    // 'RPak'
-	std::uint16_t m_nVersion;                  // R2 = '7' R5 = '8'
+	RPakVersion   m_nVersion;                  // R2 = '7' R5 = '8'
+	std::uint8_t  m_nFlags[0x2];               //
+	std::uint8_t  m_nHash0[0x8];               //
+	std::uint8_t  m_nHash1[0x8];               //
+
+	std::uint64_t m_nSizeDisk;                 // Compressed size
+	std::uint8_t  unk0[0x8];                   //
+	std::uint64_t m_nSizeMemory;               // Decompressed size
+	std::uint8_t  unk1[0x8];                   //
+
+	std::uint16_t m_nStarpakReferenceSize;     //
+	std::uint16_t m_nVirtualSegmentCount;      //
+	std::uint16_t m_nPageCount;		           //
+
+	std::uint16_t m_nPatchIndex;               //
+
+	std::uint32_t m_nDescriptorCount;          //
+	std::uint32_t m_nAssetEntryCount;          // File entry count
+	std::uint32_t m_nGuidDescriptorCount;      //
+
+	std::uint8_t  unk2[0x4];                   //
+	std::uint8_t  unk3[0x4];                   //
+	std::uint8_t  unk4[0x4];                   //
+};
+
+struct RPakHeaderR5_t
+{
+	std::uint32_t m_nMagic;                    // 'RPak'
+	RPakVersion   m_nVersion;                  // R2 = '7' R5 = '8'
 	std::uint8_t  m_nFlags[0x2];               //
 	std::uint8_t  m_nHash0[0x8];               //
 	std::uint8_t  m_nHash1[0x8];               //
@@ -146,15 +184,15 @@ struct RPakHeader_t
 	std::uint32_t m_nDescriptorCount;          //
 	std::uint32_t m_nAssetEntryCount;          // File entry count
 	std::uint32_t m_nGuidDescriptorCount;      //
-	std::uint32_t m_nRelationsCounts;         //
+	std::uint32_t m_nRelationsCounts;          //
 
 	std::uint8_t  unk2[0x1C];                  //
 };
 
 struct RPakPatchHeader_t
 {
-	uint64_t m_nSizeDisk;
-	uint64_t m_nSizeMemory;
+	std::uint64_t m_nSizeDisk;
+	std::uint64_t m_nSizeMemory;
 };
 
 

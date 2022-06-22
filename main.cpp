@@ -33,6 +33,16 @@ std::pair<std::string, bool> open_file_dialog()
 	return std::make_pair(file_str, true);
 }
 
+void decompress_r2()
+{
+
+}
+
+void decompress_r5()
+{
+
+}
+
 int main(int argc, char* argv[])
 {
 	std::string pak_path = std::string();
@@ -68,73 +78,150 @@ int main(int argc, char* argv[])
 	in_pak.seekg(0, std::fstream::beg);
 	in_pak.read((char*)u_pak.data(), u_pak.size());
 
-	RPakHeader_t* rheader = (RPakHeader_t*)u_pak.data();
-
-	if (rheader->m_nMagic != 'kaPR')
+	RPakInfoHeader_t* rinfo_header = (RPakInfoHeader_t*)u_pak.data();
+	switch (rinfo_header->Version)
 	{
-		std::cout << "ERROR: pak file " << pak_path << " has invalid magic." << std::endl;
-		std::system("pause");
-		return -1;
-	}
-
-	if ((rheader->m_nFlags[1] & 1) != 1)
+	case RPakVersion::R2:
 	{
-		std::cout << "ERROR: pak file " << pak_path << " is already decompressed." << std::endl;
-		std::system("pause");
-		return -1;
-	}
+		RPakHeaderR2_t* rheader = (RPakHeaderR2_t*)u_pak.data();
 
-	if (rheader->m_nSizeDisk != u_pak.size())
-	{
-		std::cout << "ERROR: pak file " << pak_path << " header size does not equal parsed size.\nHeader: " << rheader->m_nSizeDisk << "\nParsed: " << u_pak.size() << std::endl;
-		std::system("pause");
-		return -1;
-	}
-
-	std::int64_t params[18];
-	std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(params), u_pak.data(), u_pak.size(), 0, PAK_HEADER_SIZE);
-	if (decompressed_size == rheader->m_nSizeDisk)
-	{
-		std::cout << "Error: Calculating decompressed size did not match header.\nCalculated: " << decompressed_size << "\nHeader: " << rheader->m_nSizeMemory << std::endl;
-		std::system("pause");
-		return -1;
-	}
-
-	std::vector<std::uint8_t> pak_buf(rheader->m_nSizeMemory, 0);
-	params[1] = std::int64_t(pak_buf.data());
-	params[3] = -1i64;
-
-	bool decomp_result = g_pRtech->Decompress(params, u_pak.size(), pak_buf.size());
-	if (!decomp_result)
-	{
-		std::cout << "Error: Decompression failed for " << pak_path << "." << std::endl;
-		std::system("pause");
-		return -1;
-	}
-
-	rheader->m_nFlags[1] = 0x0; // Set header compressed to false;
-	rheader->m_nSizeDisk = rheader->m_nSizeMemory; // Since we decompressed set disk size to actual mem size.
-
-	std::string out_pak = pak_path;
-	out_pak.insert(out_pak.find(".rpak"), "_decompressed");
-
-	std::ofstream out_block(out_pak, std::fstream::binary);
-
-	// I don't know if r2 does the same thing for patch headers.
-	if (rheader->m_nPatchIndex > 0)
-	{
-		for (int i = 1, patch_offset = 0x88; i <= rheader->m_nPatchIndex; i++, patch_offset += sizeof(RPakPatchHeader_t))
+		if (rheader->m_nMagic != 'kaPR')
 		{
-			RPakPatchHeader_t* patch_header = (RPakPatchHeader_t*)((std::uintptr_t)pak_buf.data() + patch_offset);
-			patch_header->m_nSizeDisk = patch_header->m_nSizeMemory;
+			std::cout << "ERROR: pak file " << pak_path << " has invalid magic." << std::endl;
+			std::system("pause");
+			return -1;
 		}
+
+		if ((rheader->m_nFlags[1] & 1) != 1)
+		{
+			std::cout << "ERROR: pak file " << pak_path << " is already decompressed." << std::endl;
+			std::system("pause");
+			return -1;
+		}
+
+		if (rheader->m_nSizeDisk != u_pak.size())
+		{
+			std::cout << "ERROR: pak file " << pak_path << " header size does not equal parsed size.\nHeader: " << rheader->m_nSizeDisk << "\nParsed: " << u_pak.size() << std::endl;
+			std::system("pause");
+			return -1;
+		}
+
+		std::int64_t params[18];
+		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(params), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR2_t));
+		if (decompressed_size == rheader->m_nSizeDisk)
+		{
+			std::cout << "Error: Calculating decompressed size did not match header.\nCalculated: " << decompressed_size << "\nHeader: " << rheader->m_nSizeMemory << std::endl;
+			std::system("pause");
+			return -1;
+		}
+
+		std::vector<std::uint8_t> pak_buf(rheader->m_nSizeMemory, 0);
+		params[1] = std::int64_t(pak_buf.data());
+		params[3] = -1i64;
+
+		bool decomp_result = g_pRtech->Decompress(params, u_pak.size(), pak_buf.size());
+		if (!decomp_result)
+		{
+			std::cout << "Error: Decompression failed for " << pak_path << "." << std::endl;
+			std::system("pause");
+			return -1;
+		}
+
+		rheader->m_nFlags[1] = 0x0; // Set header compressed to false;
+		rheader->m_nSizeDisk = rheader->m_nSizeMemory; // Since we decompressed set disk size to actual mem size.
+
+		std::string out_pak = pak_path;
+		out_pak.insert(out_pak.find(".rpak"), "_decompressed");
+
+		std::ofstream out_block(out_pak, std::fstream::binary);
+
+		
+		if (rheader->m_nPatchIndex > 0)
+		{
+			for (int i = 1, patch_offset = 0x58; i <= rheader->m_nPatchIndex; i++, patch_offset += sizeof(RPakPatchHeader_t))
+			{
+				RPakPatchHeader_t* patch_header = (RPakPatchHeader_t*)((std::uintptr_t)pak_buf.data() + patch_offset);
+				patch_header->m_nSizeDisk = patch_header->m_nSizeMemory;
+			}
+		}
+		
+
+		memcpy_s(pak_buf.data(), params[5], ((std::uint8_t*)rheader), sizeof(RPakHeaderR2_t)); // Overwrite sizeof(RPakHeaderR2_t) which is NULL with the header data.
+		out_block.write((char*)pak_buf.data(), params[5]);
+		out_block.close();
+		break;
 	}
+	case RPakVersion::R5:
+	{
+		RPakHeaderR5_t* rheader = (RPakHeaderR5_t*)u_pak.data();
 
-	memcpy_s(pak_buf.data(), params[5], ((std::uint8_t*)rheader), PAK_HEADER_SIZE); // Overwrite first 0x80 bytes which are NULL with the header data.
+		if (rheader->m_nMagic != 'kaPR')
+		{
+			std::cout << "ERROR: pak file " << pak_path << " has invalid magic." << std::endl;
+			std::system("pause");
+			return -1;
+		}
 
-	out_block.write((char*)pak_buf.data(), params[5]);
+		if ((rheader->m_nFlags[1] & 1) != 1)
+		{
+			std::cout << "ERROR: pak file " << pak_path << " is already decompressed." << std::endl;
+			std::system("pause");
+			return -1;
+		}
 
-	out_block.close();
+		if (rheader->m_nSizeDisk != u_pak.size())
+		{
+			std::cout << "ERROR: pak file " << pak_path << " header size does not equal parsed size.\nHeader: " << rheader->m_nSizeDisk << "\nParsed: " << u_pak.size() << std::endl;
+			std::system("pause");
+			return -1;
+		}
+
+		std::int64_t params[18];
+		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(params), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR5_t));
+		if (decompressed_size == rheader->m_nSizeDisk)
+		{
+			std::cout << "Error: Calculating decompressed size did not match header.\nCalculated: " << decompressed_size << "\nHeader: " << rheader->m_nSizeMemory << std::endl;
+			std::system("pause");
+			return -1;
+		}
+
+		std::vector<std::uint8_t> pak_buf(rheader->m_nSizeMemory, 0);
+		params[1] = std::int64_t(pak_buf.data());
+		params[3] = -1i64;
+
+		bool decomp_result = g_pRtech->Decompress(params, u_pak.size(), pak_buf.size());
+		if (!decomp_result)
+		{
+			std::cout << "Error: Decompression failed for " << pak_path << "." << std::endl;
+			std::system("pause");
+			return -1;
+		}
+
+		rheader->m_nFlags[1] = 0x0; // Set header compressed to false;
+		rheader->m_nSizeDisk = rheader->m_nSizeMemory; // Since we decompressed set disk size to actual mem size.
+
+		std::string out_pak = pak_path;
+		out_pak.insert(out_pak.find(".rpak"), "_decompressed");
+
+		std::ofstream out_block(out_pak, std::fstream::binary);
+
+		if (rheader->m_nPatchIndex > 0)
+		{
+			for (int i = 1, patch_offset = 0x88; i <= rheader->m_nPatchIndex; i++, patch_offset += sizeof(RPakPatchHeader_t))
+			{
+				RPakPatchHeader_t* patch_header = (RPakPatchHeader_t*)((std::uintptr_t)pak_buf.data() + patch_offset);
+				patch_header->m_nSizeDisk = patch_header->m_nSizeMemory;
+			}
+		}
+
+		memcpy_s(pak_buf.data(), params[5], ((std::uint8_t*)rheader), sizeof(RPakHeaderR5_t)); // Overwrite sizeof(RPakHeaderR5_t) which is NULL with the header data.
+		out_block.write((char*)pak_buf.data(), params[5]);
+		out_block.close();
+		break;
+	}
+	default:
+		break;
+	}
 
 	return 0;
 }
