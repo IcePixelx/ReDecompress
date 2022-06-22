@@ -123,9 +123,9 @@ int main(int argc, char* argv[])
 	// I don't know if r2 does the same thing for patch headers.
 	if (rheader->m_nPatchIndex > 0)
 	{
-		for (int i = 1, patch_offset = 0x88; i <= rheader->m_nPatchIndex; i++, patch_offset += sizeof(RpakPatchCompressPair))
+		for (int i = 1, patch_offset = 0x88; i <= rheader->m_nPatchIndex; i++, patch_offset += sizeof(RPakPatchHeader_t))
 		{
-			RpakPatchCompressPair* patch_header = (RpakPatchCompressPair*)((std::uintptr_t)pak_buf.data() + patch_offset);
+			RPakPatchHeader_t* patch_header = (RPakPatchHeader_t*)((std::uintptr_t)pak_buf.data() + patch_offset);
 			patch_header->m_nSizeDisk = patch_header->m_nSizeMemory;
 		}
 	}

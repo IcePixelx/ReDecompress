@@ -150,13 +150,8 @@ struct RPakHeader_t
 
 	std::uint8_t  unk2[0x1C];                  //
 };
-struct RpakPatchHeader
-{
-	uint32_t PatchDataSize;				// Total size of the patch edit stream data (Following all data blocks)
-	uint32_t PatchSegmentIndex;			// Index into RpakVirtualSegmentBlock[], this entire virtual block is read FIRST, before first asset
-};
 
-struct RpakPatchCompressPair
+struct RPakPatchHeader_t
 {
 	uint64_t m_nSizeDisk;
 	uint64_t m_nSizeMemory;
