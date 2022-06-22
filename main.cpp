@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 		}
 
 		rheader->m_nFlags[1] = 0x0; // Set header compressed to false;
-		rheader->m_nSizeDisk = rheader->m_nSizeMemory; // Since we decompressed set disk size to actual mem size.
+		rheader->m_nSizeDisk = rheader->m_nSizeMemory; // Since we decompressed set disk size to actual memory size.
 
 		std::string out_pak = pak_path;
 		out_pak.insert(out_pak.find(".rpak"), "_decompressed");
@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 		}
 
 		rheader->m_nFlags[1] = 0x0; // Set header compressed to false;
-		rheader->m_nSizeDisk = rheader->m_nSizeMemory; // Since we decompressed set disk size to actual mem size.
+		rheader->m_nSizeDisk = rheader->m_nSizeMemory; // Since we decompressed set disk size to actual memory size.
 
 		std::string out_pak = pak_path;
 		out_pak.insert(out_pak.find(".rpak"), "_decompressed");
