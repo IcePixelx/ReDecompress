@@ -129,8 +129,8 @@ enum class RPakVersion : std::uint16_t
 
 struct RPakInfoHeader_t
 {
-	std::uint32_t Magic;
-	RPakVersion   Version;
+	std::uint32_t m_nMagic;
+	RPakVersion   m_nVersion;
 };
 
 struct RPakHeaderR2_t
@@ -178,7 +178,7 @@ struct RPakHeaderR5_t
 	std::uint16_t m_nStarpakReferenceSize;     //
 	std::uint16_t m_nStarpakOptReferenceSize;  //
 	std::uint16_t m_nVirtualSegmentCount;      // * 0x10
-	std::uint16_t m_nVirtualSegmentBlockCount; // * 0xC
+	std::uint16_t m_nPages; // * 0xC
 
 	std::uint32_t m_nPatchIndex;               //
 

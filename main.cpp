@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 	in_pak.read((char*)u_pak.data(), u_pak.size());
 
 	RPakInfoHeader_t* rinfo_header = (RPakInfoHeader_t*)u_pak.data();
-	switch (rinfo_header->Version)
+	switch (rinfo_header->m_nVersion)
 	{
 	case RPakVersion::R2:
 	{
