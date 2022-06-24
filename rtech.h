@@ -178,7 +178,7 @@ struct RPakHeaderR5_t
 	std::uint16_t m_nStarpakReferenceSize;     //
 	std::uint16_t m_nStarpakOptReferenceSize;  //
 	std::uint16_t m_nVirtualSegmentCount;      // * 0x10
-	std::uint16_t m_nPages; // * 0xC
+	std::uint16_t m_nPageCount; // * 0xC
 
 	std::uint32_t m_nPatchIndex;               //
 
