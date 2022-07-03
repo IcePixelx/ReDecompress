@@ -196,7 +196,7 @@ struct RPakPatchHeader_t
 	std::uint64_t m_nSizeMemory;
 };
 
-struct RPakDecompState
+struct RPakDecompState_t
 {
 	uint64_t m_nInputBuffer;
 	uint64_t m_nOutBuffer;

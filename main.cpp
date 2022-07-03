@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 
-		RPakDecompState decomp_state;
+		RPakDecompState_t decomp_state;
 		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(&decomp_state), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR2_t));
 		if (decompressed_size == rheader->m_nSizeDisk)
 		{
@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 
-		RPakDecompState decomp_state;
+		RPakDecompState_t decomp_state;
 		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(&decomp_state), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR5_t));
 		if (decompressed_size == rheader->m_nSizeDisk)
 		{
