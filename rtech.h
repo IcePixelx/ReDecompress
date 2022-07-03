@@ -196,6 +196,28 @@ struct RPakPatchHeader_t
 	std::uint64_t m_nSizeMemory;
 };
 
+struct RPakDecompState
+{
+	uint64_t m_nInputBuffer;
+	uint64_t m_nOutBuffer;
+	uint64_t m_nMask;
+	uint64_t m_nOutMask;
+	uint64_t m_nCompressedSize;
+	uint64_t m_nDecompressedSize;
+	uint64_t m_nInvMaskIn;
+	uint64_t m_nInvMaskOut;
+	uint32_t unk1;
+	uint32_t unk2;
+	uint64_t unk3;
+	uint64_t m_nDecompPosition;
+	uint64_t unk4;
+	uint64_t unk5;
+	uint32_t unk6;
+	uint32_t unk7;
+	uint64_t unk8;
+	uint64_t m_nStreamCompressedSize;
+	uint64_t m_nStreamDecompSize;
+};
 
 class RTech
 {

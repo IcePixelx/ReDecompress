@@ -96,8 +96,8 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 
-		std::int64_t params[18];
-		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(params), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR2_t));
+		RPakDecompState decomp_state;
+		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(&decomp_state), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR2_t));
 		if (decompressed_size == rheader->m_nSizeDisk)
 		{
 			std::cout << "Error: Calculating decompressed size did not match header.\nCalculated: " << decompressed_size << "\nHeader: " << rheader->m_nSizeMemory << std::endl;
@@ -106,10 +106,10 @@ int main(int argc, char* argv[])
 		}
 
 		std::vector<std::uint8_t> pak_buf(rheader->m_nSizeMemory, 0);
-		params[1] = std::int64_t(pak_buf.data());
-		params[3] = -1i64;
+		decomp_state.m_nOutBuffer = std::int64_t(pak_buf.data());
+		decomp_state.m_nOutMask = -1i64;
 
-		bool decomp_result = g_pRtech->Decompress(params, u_pak.size(), pak_buf.size());
+		bool decomp_result = g_pRtech->Decompress((std::int64_t*)&decomp_state, u_pak.size(), pak_buf.size());
 		if (!decomp_result)
 		{
 			std::cout << "Error: Decompression failed for " << pak_path << "." << std::endl;
@@ -135,8 +135,8 @@ int main(int argc, char* argv[])
 		}
 		
 
-		memcpy_s(pak_buf.data(), params[5], ((std::uint8_t*)rheader), sizeof(RPakHeaderR2_t)); // Overwrite sizeof(RPakHeaderR2_t) which is NULL with the header data.
-		out_block.write((char*)pak_buf.data(), params[5]);
+		memcpy_s(pak_buf.data(), decomp_state.m_nDecompressedSize, ((std::uint8_t*)rheader), sizeof(RPakHeaderR2_t)); // Overwrite sizeof(RPakHeaderR2_t) which is NULL with the header data.
+		out_block.write((char*)pak_buf.data(), decomp_state.m_nDecompressedSize);
 		out_block.close();
 		break;
 	}
@@ -165,8 +165,8 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 
-		std::int64_t params[18];
-		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(params), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR5_t));
+		RPakDecompState decomp_state;
+		std::uint32_t decompressed_size = g_pRtech->DecompressedSize((std::int64_t)(&decomp_state), u_pak.data(), u_pak.size(), 0, sizeof(RPakHeaderR5_t));
 		if (decompressed_size == rheader->m_nSizeDisk)
 		{
 			std::cout << "Error: Calculating decompressed size did not match header.\nCalculated: " << decompressed_size << "\nHeader: " << rheader->m_nSizeMemory << std::endl;
@@ -175,10 +175,10 @@ int main(int argc, char* argv[])
 		}
 
 		std::vector<std::uint8_t> pak_buf(rheader->m_nSizeMemory, 0);
-		params[1] = std::int64_t(pak_buf.data());
-		params[3] = -1i64;
+		decomp_state.m_nOutBuffer = std::int64_t(pak_buf.data());
+		decomp_state.m_nOutMask = -1i64;
 
-		bool decomp_result = g_pRtech->Decompress(params, u_pak.size(), pak_buf.size());
+		bool decomp_result = g_pRtech->Decompress((std::int64_t*)&decomp_state, u_pak.size(), pak_buf.size());
 		if (!decomp_result)
 		{
 			std::cout << "Error: Decompression failed for " << pak_path << "." << std::endl;
@@ -203,8 +203,8 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		memcpy_s(pak_buf.data(), params[5], ((std::uint8_t*)rheader), sizeof(RPakHeaderR5_t)); // Overwrite sizeof(RPakHeaderR5_t) which is NULL with the header data.
-		out_block.write((char*)pak_buf.data(), params[5]);
+		memcpy_s(pak_buf.data(), decomp_state.m_nDecompressedSize, ((std::uint8_t*)rheader), sizeof(RPakHeaderR5_t)); // Overwrite sizeof(RPakHeaderR5_t) which is NULL with the header data.
+		out_block.write((char*)pak_buf.data(), decomp_state.m_nDecompressedSize);
 		out_block.close();
 		break;
 	}
